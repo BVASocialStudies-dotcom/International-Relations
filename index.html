@@ -1,1 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>International Relations — Course Home</title>
+<style>
+  :root{
+    --navy-deep: #0B141C;
+    --navy: #14212C;
+    --navy-soft: #1C2E3B;
+    --paper: #F3EFE4;
+    --paper-dim: #E7E0CE;
+    --ink: #1D2833;
+    --ink-soft: #4E5D67;
+    --brass: #B08D3E;
+    --brass-bright: #D2AC55;
+    --cream: #FAF6EC;
 
+    --u1: #2E7D6B;   /* teal */
+    --u1-soft: rgba(46,125,107,0.12);
+    --u2: #3E6B3A;   /* dark green — matches T-Shirt Passport activity */
+    --u2-soft: rgba(62,107,58,0.12);
+    --u3: #A2452F;   /* rust */
+    --u3-soft: rgba(162,69,47,0.12);
+
+    --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+    --mono: 'Courier New', Courier, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    background: var(--navy-deep);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(176,141,62,0.08), transparent 40%),
+      radial-gradient(circle at 85% 100%, rgba(46,125,107,0.07), transparent 45%),
+      var(--navy-deep);
+    color: var(--paper);
+    font-family: var(--sans);
+  }
+
+  .wrap{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    padding: 56px 0 40px;
+    border-bottom: 1px solid rgba(243,239,228,0.12);
+    margin-bottom: 44px;
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 11.5px;
+    color: var(--brass-bright);
+    margin: 0 0 14px;
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width: 26px; height:1px;
+    background: var(--brass-bright);
+  }
+  h1.title{
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(34px, 6vw, 54px);
+    line-height: 1.04;
+    margin: 0 0 14px;
+    color: var(--cream);
+  }
+  p.dek{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 17px;
+    color: #C9C2AC;
+    max-width: 560px;
+    line-height: 1.55;
+    margin: 0 0 22px;
+  }
+  .hero-meta{
+    display:flex;
+    gap: 22px;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: #8FA0A8;
+  }
+  .hero-meta span b{ color: var(--paper); font-weight: 700; }
+
+  /* ---------- Unit index (quick jump) ---------- */
+  .jump{
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
+  }
+  .jump a{
+    text-decoration:none;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--navy-deep);
+    background: var(--paper);
+    padding: 9px 15px;
+    border-radius: 20px;
+    border: 1px solid transparent;
+  }
+  .jump a:hover{ background: var(--brass-bright); }
+
+  /* ---------- Unit section ---------- */
+  .unit{
+    background: var(--navy-soft);
+    border: 1px solid rgba(243,239,228,0.1);
+    border-radius: 12px;
+    padding: 30px 28px 28px;
+    margin-bottom: 30px;
+    scroll-margin-top: 24px;
+  }
+  .unit-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed rgba(243,239,228,0.18);
+  }
+  .unit-tag{
+    display:inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 11px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+  .unit[data-unit="1"] .unit-tag{ background: var(--u1-soft); color: var(--u1); border: 1px solid var(--u1); }
+  .unit[data-unit="2"] .unit-tag{ background: var(--u2-soft); color: #7FBF74; border: 1px solid var(--u2); }
+  .unit[data-unit="3"] .unit-tag{ background: var(--u3-soft); color: #E08064; border: 1px solid var(--u3); }
+
+  .unit h2{
+    font-family: var(--serif);
+    font-size: 26px;
+    margin: 0 0 8px;
+    color: var(--cream);
+  }
+  .unit p.desc{
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: #C4CAC9;
+    max-width: 560px;
+    margin: 0;
+  }
+  .unit-count{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #8FA0A8;
+    text-align:right;
+    white-space: nowrap;
+  }
+
+  /* ---------- Activity grid ---------- */
+  .activities{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+  }
+
+  .activity{
+    background: var(--cream);
+    color: var(--ink);
+    border-radius: 9px;
+    padding: 18px 18px 16px;
+    display:flex;
+    flex-direction:column;
+    min-height: 168px;
+  }
+  .activity .a-label{
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  .activity h3{
+    font-family: var(--serif);
+    font-size: 17px;
+    margin: 0 0 8px;
+    line-height: 1.25;
+  }
+  .activity p{
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+    flex-grow: 1;
+  }
+  .activity .launch{
+    align-self: flex-start;
+    text-decoration:none;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 9px 15px;
+    border-radius: 6px;
+    color: var(--cream);
+  }
+  .unit[data-unit="1"] .activity .launch{ background: var(--u1); }
+  .unit[data-unit="2"] .activity .launch{ background: var(--u2); }
+  .unit[data-unit="3"] .activity .launch{ background: var(--u3); }
+
+  /* ---------- Empty activity slot ---------- */
+  .activity.empty{
+    background: transparent;
+    border: 1.5px dashed rgba(243,239,228,0.3);
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color: #8FA0A8;
+    gap: 8px;
+  }
+  .activity.empty .plus{
+    width: 34px; height:34px;
+    border-radius:50%;
+    border: 1.5px dashed rgba(243,239,228,0.4);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 17px;
+    margin-bottom: 4px;
+  }
+  .activity.empty .slot-label{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .activity.empty .slot-hint{
+    font-size: 11px;
+    color: #6B7C83;
+    max-width: 160px;
+  }
+
+  footer.credit{
+    text-align:center;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: #5C6D74;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 560px){
+    .unit-head{ flex-direction: column; }
+    .unit-count{ text-align:left; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">Course Home</p>
+    <h1 class="title">International Relations</h1>
+    <p class="dek">Three units, one running thread: how power, people, and money move across borders — and what happens when they collide.</p>
+    <div class="hero-meta">
+      <span><b>3</b> units</span>
+      <span><b id="activity-count">4</b> activities</span>
+    </div>
+  </header>
+
+  <nav class="jump">
+    <a href="#unit-1">Unit 1</a>
+    <a href="#unit-2">Unit 2</a>
+    <a href="#unit-3">Unit 3</a>
+  </nav>
+
+  <!-- ============================================================ -->
+  <!-- UNIT 1                                                        -->
+  <!-- ============================================================ -->
+  <section class="unit" id="unit-1" data-unit="1">
+    <div class="unit-head">
+      <div>
+        <span class="unit-tag">Unit 01</span>
+        <h2>Unit 1</h2>
+        <p class="desc">Add this unit's topic and a one- or two-sentence description here.</p>
+      </div>
+      <div class="unit-count">2 activities</div>
+    </div>
+    <div class="activities">
+
+      <!-- ACTIVITY SLOT 1.1 — paste embed/iframe/link code inside this div, or edit the placeholder below -->
+      <div class="activity empty">
+        <div class="plus">+</div>
+        <div class="slot-label">Empty Slot</div>
+        <div class="slot-hint">Paste an activity's code or link here</div>
+      </div>
+      <!-- END ACTIVITY SLOT 1.1 -->
+
+      <!-- ACTIVITY SLOT 1.2 -->
+      <div class="activity empty">
+        <div class="plus">+</div>
+        <div class="slot-label">Empty Slot</div>
+        <div class="slot-hint">Paste an activity's code or link here</div>
+      </div>
+      <!-- END ACTIVITY SLOT 1.2 -->
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- UNIT 2                                                        -->
+  <!-- ============================================================ -->
+  <section class="unit" id="unit-2" data-unit="2">
+    <div class="unit-head">
+      <div>
+        <span class="unit-tag">Unit 02</span>
+        <h2>Unit 2</h2>
+        <p class="desc">Add this unit's topic and a one- or two-sentence description here.</p>
+      </div>
+      <div class="unit-count">2 activities</div>
+    </div>
+    <div class="activities">
+
+      <!-- ACTIVITY SLOT 2.1 — filled example: T-Shirt Passport -->
+      <!-- Update the href below if you rename or move tshirt-passport.html -->
+      <div class="activity">
+        <div class="a-label">Interactive · 10–15 min</div>
+        <h3>The Secret Life of a T-Shirt</h3>
+        <p>Trace one ordinary shirt across three continents — cotton, factories, workers, and shipping — collecting a passport stamp at each stop.</p>
+        <a class="launch" href="tshirt-passport.html" target="_blank" rel="noopener">Launch →</a>
+      </div>
+      <!-- END ACTIVITY SLOT 2.1 -->
+
+      <!-- ACTIVITY SLOT 2.2 -->
+      <div class="activity empty">
+        <div class="plus">+</div>
+        <div class="slot-label">Empty Slot</div>
+        <div class="slot-hint">Paste an activity's code or link here</div>
+      </div>
+      <!-- END ACTIVITY SLOT 2.2 -->
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- UNIT 3                                                        -->
+  <!-- ============================================================ -->
+  <section class="unit" id="unit-3" data-unit="3">
+    <div class="unit-head">
+      <div>
+        <span class="unit-tag">Unit 03</span>
+        <h2>Unit 3</h2>
+        <p class="desc">Add this unit's topic and a one- or two-sentence description here.</p>
+      </div>
+      <div class="unit-count">2 activities</div>
+    </div>
+    <div class="activities">
+
+      <!-- ACTIVITY SLOT 3.1 -->
+      <div class="activity empty">
+        <div class="plus">+</div>
+        <div class="slot-label">Empty Slot</div>
+        <div class="slot-hint">Paste an activity's code or link here</div>
+      </div>
+      <!-- END ACTIVITY SLOT 3.1 -->
+
+      <!-- ACTIVITY SLOT 3.2 -->
+      <div class="activity empty">
+        <div class="plus">+</div>
+        <div class="slot-label">Empty Slot</div>
+        <div class="slot-hint">Paste an activity's code or link here</div>
+      </div>
+      <!-- END ACTIVITY SLOT 3.2 -->
+
+    </div>
+  </section>
+
+  <footer class="credit">International Relations · Course Home</footer>
+</div>
+</body>
+</html>
