@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passport: The Secret Life of a T-Shirt</title>
+<style>
+  :root{
+    --paper: #F1E7D2;
+    --paper-dark: #E3D3AE;
+    --paper-line: #C9B586;
+    --ink: #2A2118;
+    --ink-soft: #5B4D3B;
+    --indigo: #2F4A34;
+    --indigo-deep: #1C2E1F;
+    --thread: #B5842B;
+    --stamp-red: #A5372B;
+    --stamp-green: #43593C;
+    --stamp-blue: #2F4A34;
+    --cream: #FBF6EA;
+    --shadow: rgba(42,33,24,0.25);
+    --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+    --mono: 'Courier New', Courier, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse at top left, rgba(255,255,255,0.15), transparent 60%),
+      var(--paper);
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(181,132,43,0.06) 0, transparent 45%),
+      radial-gradient(circle at 80% 70%, rgba(47,74,52,0.06) 0, transparent 45%),
+      var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    padding: 28px 16px 60px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .book{
+    width:100%;
+    max-width: 760px;
+  }
+
+  /* ---------- Header / cover ---------- */
+  .cover{
+    background: var(--indigo-deep);
+    background-image: linear-gradient(160deg, var(--indigo-deep), var(--indigo) 70%);
+    color: var(--cream);
+    border-radius: 14px;
+    padding: 30px 26px 24px;
+    box-shadow: 0 10px 30px var(--shadow);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .cover::before{
+    content:"";
+    position:absolute; inset:8px;
+    border: 1px solid rgba(251,246,234,0.35);
+    border-radius: 8px;
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    letter-spacing: 3px;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #D9C48C;
+    margin: 0 0 10px;
+  }
+  .cover h1{
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 40px);
+    margin: 0 0 8px;
+    line-height: 1.05;
+  }
+  .cover p.sub{
+    font-family: var(--serif);
+    font-style: italic;
+    color: #E8DEC4;
+    margin: 0 0 18px;
+    font-size: 15px;
+  }
+  .cover-meta{
+    display:flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: #C9BE9F;
+    border-top: 1px dashed rgba(251,246,234,0.3);
+    padding-top: 12px;
+  }
+
+  /* ---------- Route strip ---------- */
+  .route{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    margin: 22px 4px 0;
+    position: relative;
+    padding: 0 4px;
+  }
+  .route::before{
+    content:"";
+    position:absolute;
+    top: 17px; left: 24px; right: 24px;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, var(--paper-line) 0 6px, transparent 6px 11px);
+    z-index:0;
+  }
+  .stop{
+    position: relative;
+    z-index: 1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-family: var(--mono);
+    color: var(--ink-soft);
+    padding: 4px;
+    flex: 1;
+  }
+  .stop .dot{
+    width: 34px; height:34px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 2px solid var(--paper-line);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 15px;
+    transition: all .25s ease;
+  }
+  .stop.done .dot{ background: var(--stamp-green); border-color: var(--stamp-green); color: var(--cream); }
+  .stop.current .dot{ background: var(--indigo); border-color: var(--indigo); color: var(--cream); transform: scale(1.15); box-shadow: 0 4px 10px rgba(47,74,52,0.35); }
+  .stop .label{ font-size: 9.5px; letter-spacing: 0.5px; text-transform: uppercase; text-align:center; }
+  .stop.current .label{ color: var(--indigo); font-weight:700; }
+  .stop:disabled{ cursor: default; }
+
+  /* ---------- Page card ---------- */
+  .page{
+    background: var(--cream);
+    border-radius: 10px;
+    margin-top: 18px;
+    padding: 26px 24px 24px;
+    box-shadow: 0 6px 18px var(--shadow);
+    border: 1px solid var(--paper-line);
+    position: relative;
+    min-height: 340px;
+  }
+  .page::after{
+    content:"";
+    position:absolute; left:0; top:14px; bottom:14px; width:3px;
+    background: repeating-linear-gradient(180deg, var(--paper-line) 0 4px, transparent 4px 9px);
+    border-radius: 2px;
+  }
+
+  .place-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--indigo);
+    background: rgba(47,74,52,0.08);
+    border: 1px solid rgba(47,74,52,0.25);
+    border-radius: 20px;
+    padding: 5px 12px;
+    margin-bottom: 14px;
+  }
+
+  .page h2{
+    font-family: var(--serif);
+    font-size: clamp(22px, 4vw, 28px);
+    margin: 0 0 6px;
+    color: var(--ink);
+  }
+  .page h3.kicker{
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+    font-size: 15px;
+  }
+
+  .fact{
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin-bottom: 18px;
+  }
+  .fact strong{ color: var(--indigo); }
+
+  .statline{
+    font-family: var(--mono);
+    background: var(--paper);
+    border: 1px dashed var(--paper-line);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 20px;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Question ---------- */
+  .quiz-label{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--thread);
+    margin-bottom: 8px;
+  }
+  .quiz-q{
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
+  .options{
+    display:grid;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .opt{
+    text-align:left;
+    background: var(--paper);
+    border: 1.5px solid var(--paper-line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 14.5px;
+    color: var(--ink);
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all .15s ease;
+  }
+  .opt:hover:not(:disabled){ border-color: var(--indigo); background: #EFE6D2; }
+  .opt.correct{ background: #E3EBDD; border-color: var(--stamp-green); color: #2F4028; font-weight:700; }
+  .opt.wrong{ background: #F3DCD8; border-color: var(--stamp-red); color: #7A2B21; }
+  .opt:disabled{ cursor: default; }
+
+  .feedback{
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.55;
+    background: var(--paper);
+    border-left: 3px solid var(--indigo);
+    padding: 10px 14px;
+    border-radius: 4px;
+    display:none;
+  }
+  .feedback.show{ display:block; }
+
+  .nav-row{
+    display:flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  .btn{
+    font-family: var(--mono);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 12.5px;
+    background: var(--indigo);
+    color: var(--cream);
+    border: none;
+    border-radius: 6px;
+    padding: 11px 20px;
+    cursor: pointer;
+    display:none;
+  }
+  .btn.show{ display:inline-flex; align-items:center; gap:8px; }
+  .btn:hover{ background: var(--indigo-deep); }
+
+  /* stamp badge that appears on the page after correct answer */
+  .stamp{
+    position:absolute;
+    top: 22px; right: 20px;
+    width: 78px; height: 78px;
+    border-radius: 50%;
+    border: 3px solid var(--stamp-red);
+    color: var(--stamp-red);
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transform: rotate(-14deg) scale(0);
+    opacity:0;
+    pointer-events:none;
+    transition: transform .45s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+  }
+  .stamp.show{ transform: rotate(-14deg) scale(1); opacity: 0.88; }
+  .stamp::before{
+    content:"";
+    position:absolute; inset:6px;
+    border: 1px solid var(--stamp-red);
+    border-radius: 50%;
+  }
+
+  /* ---------- Reflection (last stop) ---------- */
+  .reflect-list{
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+  }
+  .reflect-list li{
+    font-size: 14.5px;
+    line-height: 1.6;
+    padding: 10px 0 10px 26px;
+    position: relative;
+    border-bottom: 1px dashed var(--paper-line);
+  }
+  .reflect-list li:last-child{ border-bottom:none; }
+  .reflect-list li::before{
+    content: "?";
+    position:absolute; left:0; top:9px;
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--thread);
+    font-weight:700;
+  }
+
+  /* ---------- Summary passport strip ---------- */
+  .summary{
+    display:none;
+    margin-top: 18px;
+    background: var(--indigo-deep);
+    background-image: linear-gradient(160deg, var(--indigo-deep), var(--indigo) 75%);
+    border-radius: 10px;
+    padding: 22px 22px 18px;
+    color: var(--cream);
+    box-shadow: 0 6px 18px var(--shadow);
+  }
+  .summary.show{ display:block; }
+  .summary h3{
+    font-family: var(--serif);
+    margin: 0 0 4px;
+    font-size: 20px;
+  }
+  .summary .score{
+    font-family: var(--mono);
+    color: #D9C48C;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .stamp-row{
+    display:flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .mini-stamp{
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    border: 2px solid #D9C48C;
+    color: #D9C48C;
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--mono);
+    font-size: 8px;
+    text-align:center;
+    line-height:1.15;
+    text-transform:uppercase;
+    transform: rotate(-8deg);
+    opacity: 0.4;
+  }
+  .mini-stamp.earned{ opacity: 1; border-style: solid; }
+
+  .restart{
+    margin-top: 16px;
+    background: none;
+    border: 1px solid rgba(251,246,234,0.5);
+    color: var(--cream);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 9px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .restart:hover{ background: rgba(251,246,234,0.1); }
+
+  footer.credit{
+    text-align:center;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    opacity: 0.6;
+    margin-top: 18px;
+  }
+
+  @media (max-width: 480px){
+    .stop .label{ display:none; }
+    .stamp{ width: 62px; height: 62px; font-size: 8px; top: 14px; right: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="book">
+
+  <div class="cover">
+    <p class="eyebrow">Field Passport &nbsp;·&nbsp; No. 2013-TS</p>
+    <h1>The Secret Life of a T‑Shirt</h1>
+    <p class="sub">Follow one ordinary shirt around the globe — and find out why almost nothing about it is ordinary.</p>
+    <div class="cover-meta">
+      <span>5 STOPS</span>
+      <span>3 CONTINENTS</span>
+      <span id="score-meta">0 / 4 STAMPS</span>
+    </div>
+  </div>
+
+  <nav class="route" id="route"></nav>
+
+  <main class="page" id="page">
+    <!-- filled by JS -->
+  </main>
+
+  <div class="summary" id="summary">
+    <h3>Passport Complete</h3>
+    <div class="score" id="summary-score">You collected 0 of 4 stamps.</div>
+    <div class="stamp-row" id="summary-stamps"></div>
+    <p style="font-size:13.5px; line-height:1.6; color:#EDE4CC; margin-top:14px;">
+      Talk it over as a class:
+    </p>
+    <ul class="reflect-list" id="discuss-list" style="color:#EDE4CC;"></ul>
+    <button class="restart" id="restart-btn">Start Over</button>
+  </div>
+
+  <footer class="credit">Built from NPR Planet Money's "Planet Money Makes A T-Shirt" · apps.npr.org/tshirt</footer>
+</div>
+
+<script>
+const STATIONS = [
+  {
+    id: "cotton",
+    place: "Clarksdale, Mississippi, USA",
+    icon: "🌱",
+    title: "Cotton",
+    kicker: "One farmer. A shocking number of T‑shirts.",
+    fact: "A Mississippi cotton farm runs on machines more than muscle. Just <strong>13 people</strong> operate <strong>26 machines</strong> — including robotic pickers that drive themselves through the rows, sensing each cotton stalk and twisting off only the fluffy white puffs.",
+    stat: "1 farm · 13 workers · 26 machines · ~9.4 million T-shirts worth of cotton a year",
+    question: "One of the newest robotic cotton pickers now does a job that used to take how many workers?",
+    options: ["1 worker", "5 workers", "13 workers", "26 workers"],
+    correct: 1,
+    explain: "Right — the newest picker needs just one driver to do what took five people a couple of years earlier. Technology like this is a big reason the U.S. exports more cotton than any country on Earth.",
+    stampText: "U.S.\nCOTTON\n✓ CLEARED"
+  },
+  {
+    id: "machines",
+    place: "Purwakarta, Indonesia",
+    icon: "🧵",
+    title: "Machines",
+    kicker: "Sucked up, laid down, and twisted.",
+    fact: "American cotton travels 10,000 miles to Indonesia, where a <strong>$35 million factory</strong> spins it into yarn around the clock, 361 days a year. The exact recipe — thickness, twist, tenacity — is a closely guarded secret. \"That's our special sauce,\" one Jockey executive said.",
+    stat: "Factory runs 24 hrs/day · 361 days/year · yarn recipe kept secret",
+    question: "How many miles of yarn does it actually take to make just ONE T-shirt?",
+    options: ["6 inches", "60 feet", "6 miles", "60 miles"],
+    correct: 2,
+    explain: "Six miles of yarn, coiled into a single shirt. If any of it is even slightly too thick or thin, the shirt can start falling apart after a few washes.",
+    stampText: "INDONESIA\nSPINNING MILL\n✓ CLEARED"
+  },
+  {
+    id: "people",
+    place: "Chittagong, Bangladesh",
+    icon: "🧑‍🏭",
+    title: "People",
+    kicker: "The lives of the workers who made our shirt.",
+    fact: "The shirts were sewn by workers like Jasmine, who started in the garment industry at 16. Earlier in 2013, the collapse of the Rana Plaza factory building killed more than 1,000 workers and set off huge protests demanding safer conditions and better pay.",
+    stat: "Workers on our shirt earned about $80/month while we visited",
+    question: "After the Rana Plaza tragedy and the protests that followed, what happened to Bangladesh's garment minimum wage?",
+    options: ["It was cut in half", "It stayed exactly the same", "It nearly doubled", "It rose tenfold"],
+    correct: 2,
+    explain: "It rose from $39 to $68 a month — still far below the $104 workers were asking for, but a real jump won through public pressure after the tragedy.",
+    stampText: "BANGLADESH\nGARMENT DIST.\n✓ CLEARED"
+  },
+  {
+    id: "boxes",
+    place: "Port of Cartagena, Colombia",
+    icon: "🚢",
+    title: "Boxes",
+    kicker: "The unsung invention behind the global economy.",
+    fact: "Before the shipping container, loading a single ship by hand could take weeks. A trucking-company owner named Malcolm McLean had a simple idea: make the truck's box detachable so a crane could swing it straight onto a ship. That one idea rewired world trade.",
+    stat: "1 standard container ≈ up to 82,880 T-shirts",
+    question: "About how much did it cost to ship ONE of our shirts all the way from Bangladesh to the U.S.?",
+    options: ["About $5.00", "About $1.00", "About 10 cents", "About 1 cent"],
+    correct: 2,
+    explain: "Roughly 10 cents a shirt. Cheap, standardized shipping containers are exactly why a company can afford to grow cotton in one country, spin it in another, and sew it in a third.",
+    stampText: "CONTAINER\nSHIPPING CO.\n✓ CLEARED"
+  },
+  {
+    id: "you",
+    place: "Everywhere the shirt was sold",
+    icon: "🎽",
+    title: "You",
+    kicker: "Where the shirt starts and ends — and everyone in between.",
+    fact: "The whole trip — Mississippi cotton, Indonesian yarn, Bangladeshi sewing, a container ship, and a mailbox — happens so an ordinary shirt can sell for about the price of a movie ticket. More than 20,000 people funded this very investigation by pre-ordering a shirt on Kickstarter.",
+    stat: "Goal: 2,000 shirts · Actually sold: 25,000 shirts",
+    isFinal: true
+  }
+];
+
+const DISCUSS = [
+  "Which stop in the journey surprised you the most, and why?",
+  "The U.S. grows most of the cotton, but almost none of the sewing happens there. Why might that be?",
+  "If wages keep rising in Bangladesh, where might a company move production next — and what would that country need to have first?",
+  "Is it fair that a shirt can cost more to decorate with a logo than it costs to ship halfway around the world? Why or why not?"
+];
+
+let current = 0;
+let answered = new Array(STATIONS.length).fill(false);
+let correctCount = 0;
+const scorable = STATIONS.filter(s => !s.isFinal).length;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function shuffleAllOptions(){
+  STATIONS.forEach(s => {
+    if (s.isFinal) return;
+    const correctText = s.options[s.correct];
+    const shuffled = shuffle(s.options);
+    s.options = shuffled;
+    s.correct = shuffled.indexOf(correctText);
+    delete s.lastPick;
+  });
+}
+
+const routeEl = document.getElementById('route');
+const pageEl = document.getElementById('page');
+const summaryEl = document.getElementById('summary');
+const scoreMetaEl = document.getElementById('score-meta');
+
+function buildRoute(){
+  routeEl.innerHTML = '';
+  STATIONS.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'stop' + (i === current ? ' current' : '') + (answered[i] ? ' done' : '');
+    btn.innerHTML = `<span class="dot">${answered[i] ? '✓' : s.icon}</span><span class="label">${s.title}</span>`;
+    btn.disabled = i > current && !answered[current];
+    btn.addEventListener('click', () => {
+      if (i <= current || answered[current]) { current = i; render(); }
+    });
+    routeEl.appendChild(btn);
+  });
+}
+
+function updateScoreMeta(){
+  scoreMetaEl.textContent = `${correctCount} / ${scorable} STAMPS`;
+}
+
+function render(){
+  buildRoute();
+  const s = STATIONS[current];
+
+  if (s.isFinal){
+    pageEl.innerHTML = `
+      <span class="place-tag">📍 ${s.place}</span>
+      <h2>${s.icon} ${s.title}</h2>
+      <h3 class="kicker">${s.kicker}</h3>
+      <div class="fact">${s.fact}</div>
+      <div class="statline">${s.stat}</div>
+      <div class="nav-row">
+        <button class="btn show" id="finish-btn">Open Final Passport →</button>
+      </div>
+    `;
+    document.getElementById('finish-btn').addEventListener('click', showSummary);
+    return;
+  }
+
+  const done = answered[current];
+  pageEl.innerHTML = `
+    <span class="place-tag">📍 ${s.place}</span>
+    <h2>${s.icon} ${s.title}</h2>
+    <h3 class="kicker">${s.kicker}</h3>
+    <div class="fact">${s.fact}</div>
+    <div class="statline">${s.stat}</div>
+    <div class="quiz-label">Quick Check</div>
+    <div class="quiz-q">${s.question}</div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="nav-row"><button class="btn" id="next-btn">Next Stop →</button></div>
+    <div class="stamp" id="stamp">${s.stampText.split('\\n').map(l=>`<div>${l}</div>`).join('')}</div>
+  `;
+
+  const optionsEl = document.getElementById('options');
+  s.options.forEach((opt, idx) => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = opt;
+    b.addEventListener('click', () => selectAnswer(idx));
+    optionsEl.appendChild(b);
+  });
+
+  if (done){
+    lockOptions(s.lastPick !== undefined ? s.lastPick : s.correct);
+    showFeedback(s);
+    document.getElementById('next-btn').classList.add('show');
+    if (current < STATIONS.length - 1){
+      document.getElementById('stamp').classList.add('show');
+    }
+  }
+  document.getElementById('next-btn').addEventListener('click', () => {
+    if (current < STATIONS.length - 1){ current++; render(); }
+  });
+}
+
+function selectAnswer(idx){
+  const s = STATIONS[current];
+  if (answered[current]) return;
+  answered[current] = true;
+  s.lastPick = idx;
+  if (idx === s.correct) correctCount++;
+  updateScoreMeta();
+  lockOptions(idx);
+  showFeedback(s);
+  document.getElementById('next-btn').classList.add('show');
+  document.getElementById('stamp').classList.add('show');
+  buildRoute();
+}
+
+function lockOptions(pickedIdx){
+  const s = STATIONS[current];
+  const btns = document.querySelectorAll('#options .opt');
+  btns.forEach((b, idx) => {
+    b.disabled = true;
+    if (idx === s.correct) b.classList.add('correct');
+    else if (idx === pickedIdx) b.classList.add('wrong');
+  });
+}
+
+function showFeedback(s){
+  const fb = document.getElementById('feedback');
+  const wasRight = s.lastPick === s.correct;
+  fb.innerHTML = `<strong>${wasRight ? 'Stamped!' : 'Not quite —'}</strong> ${s.explain}`;
+  fb.classList.add('show');
+}
+
+function showSummary(){
+  document.getElementById('summary-score').textContent = `You collected ${correctCount} of ${scorable} stamps.`;
+  const row = document.getElementById('summary-stamps');
+  row.innerHTML = '';
+  STATIONS.filter(s => !s.isFinal).forEach(s => {
+    const earned = s.lastPick === s.correct;
+    const d = document.createElement('div');
+    d.className = 'mini-stamp' + (earned ? ' earned' : '');
+    d.textContent = s.title.toUpperCase();
+    row.appendChild(d);
+  });
+  const list = document.getElementById('discuss-list');
+  list.innerHTML = '';
+  DISCUSS.forEach(q => {
+    const li = document.createElement('li');
+    li.textContent = q;
+    list.appendChild(li);
+  });
+  summaryEl.classList.add('show');
+  summaryEl.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+document.getElementById('restart-btn').addEventListener('click', () => {
+  current = 0;
+  answered = new Array(STATIONS.length).fill(false);
+  correctCount = 0;
+  shuffleAllOptions();
+  updateScoreMeta();
+  summaryEl.classList.remove('show');
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+
+shuffleAllOptions();
+updateScoreMeta();
+render();
+</script>
+</body>
+</html>
