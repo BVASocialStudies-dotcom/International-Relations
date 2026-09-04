@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coalition or Alone — A Foreign Policy Choice Game</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap');
+
+  :root {
+    --ink-deep: #2e2e2e;
+    --ink-panel: #383838;
+    --ink-panel-2: #424242;
+    --parchment: #ede6d3;
+    --parchment-2: #e2d9c1;
+    --text-dark: #201c1c;
+    --text-dim: #6b6461;
+    --gold: #e2231a;
+    --gold-bright: #ff4a3d;
+    --teal: #e2231a;
+    --teal-dark: #a3170f;
+    --maroon: #1a1a1a;
+    --maroon-dark: #000000;
+    --cream-text: #f0ece5;
+    --danger: #a8402f;
+    --good: #e2231a;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ink-deep);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(226,35,26,0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(255,255,255,0.05), transparent 45%);
+    color: var(--cream-text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+
+  header.masthead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(226,35,26,0.35);
+    padding-bottom: 14px;
+    margin-bottom: 26px;
+    gap: 12px;
+  }
+
+  header.masthead .brand {
+    font-family: 'Lora', serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 0.01em;
+    color: var(--gold-bright);
+  }
+
+  header.masthead .brand span {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    color: rgba(233,226,207,0.55);
+    letter-spacing: 0.06em;
+    margin-top: 3px;
+  }
+
+  button.glossary-btn {
+    background: transparent;
+    border: 1px solid rgba(226,35,26,0.5);
+    color: var(--gold-bright);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.78rem;
+    padding: 7px 13px;
+    border-radius: 3px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+  }
+  button.glossary-btn:hover { background: rgba(226,35,26,0.12); }
+
+  .dossier {
+    background: var(--parchment);
+    color: var(--text-dark);
+    border-radius: 2px;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dossier::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--maroon) 0 50%, var(--teal) 50% 100%);
+  }
+
+  .dossier-inner { padding: 34px 32px 30px; }
+
+  .tag-line {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin: 0 0 6px;
+  }
+
+  h1.headline {
+    font-family: 'Lora', serif;
+    font-size: 1.7rem;
+    line-height: 1.28;
+    font-weight: 700;
+    margin: 0 0 14px;
+    color: var(--text-dark);
+  }
+
+  h2.subhead {
+    font-family: 'Lora', serif;
+    font-size: 1.28rem;
+    font-weight: 600;
+    margin: 0 0 12px;
+    color: var(--text-dark);
+  }
+
+  p.body-text {
+    font-family: 'Lora', serif;
+    font-size: 1.03rem;
+    line-height: 1.62;
+    margin: 0 0 15px;
+    color: var(--text-dark);
+    max-width: 62ch;
+  }
+
+  p.body-text.last { margin-bottom: 0; }
+
+  .meta-row {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-bottom: 22px;
+    border-top: 1px dashed rgba(42,33,24,0.25);
+    border-bottom: 1px dashed rgba(42,33,24,0.25);
+    padding: 8px 0;
+  }
+
+  .divider {
+    height: 1px;
+    background: rgba(42,33,24,0.15);
+    margin: 22px 0;
+  }
+
+  .choice-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 22px;
+  }
+  @media (max-width: 560px) {
+    .choice-grid { grid-template-columns: 1fr; }
+  }
+
+  .choice-card {
+    text-align: left;
+    border: none;
+    border-radius: 3px;
+    padding: 18px 18px 16px;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: var(--cream-text);
+    position: relative;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .choice-card:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(0,0,0,0.28); }
+  .choice-card:active { transform: translateY(0); }
+
+  .choice-card.multilateral { background: linear-gradient(160deg, var(--teal) 0%, var(--teal-dark) 100%); }
+  .choice-card.unilateral   { background: linear-gradient(160deg, var(--maroon) 0%, var(--maroon-dark) 100%); }
+
+  .choice-card .stamp {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.09em;
+    opacity: 0.75;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .choice-card .ctitle {
+    font-family: 'Lora', serif;
+    font-weight: 700;
+    font-size: 1.08rem;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .choice-card .cdesc {
+    font-size: 0.87rem;
+    line-height: 1.5;
+    opacity: 0.92;
+    display: block;
+  }
+
+  .continue-btn {
+    margin-top: 22px;
+    background: var(--ink-deep);
+    color: var(--gold-bright);
+    border: none;
+    border-radius: 3px;
+    padding: 12px 22px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .continue-btn:hover { background: #0d1626; }
+
+  .restart-btn, .ghost-btn {
+    margin-top: 10px;
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid rgba(42,33,24,0.3);
+    border-radius: 3px;
+    padding: 10px 18px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .restart-btn:hover, .ghost-btn:hover { background: rgba(42,33,24,0.06); }
+
+  /* Hub */
+  .hub-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .hub-card {
+    text-align: left;
+    border: 1px solid rgba(42,33,24,0.18);
+    border-left: 5px solid var(--teal);
+    border-radius: 3px;
+    padding: 20px 20px 18px;
+    background: var(--parchment-2);
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    position: relative;
+    width: 100%;
+    display: block;
+  }
+  .hub-card.uni { border-left-color: var(--maroon); }
+  .hub-card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,0.14); }
+  .hub-card .part-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .hub-card .part-title {
+    font-family: 'Lora', serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .hub-card .part-desc {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-dark);
+    display: block;
+  }
+  .hub-card .concept-chip {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
+    padding: 4px 9px;
+    border-radius: 3px;
+    color: #fff;
+    background: var(--teal);
+  }
+  .hub-card.uni .concept-chip { background: var(--maroon); }
+  .hub-card .done-badge {
+    position: absolute;
+    top: 16px; right: 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.05em;
+    color: var(--good);
+  }
+
+  /* Meters */
+  .meters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 20px;
+    margin: 18px 0 8px;
+  }
+  @media (max-width: 560px) { .meters { grid-template-columns: 1fr; } }
+
+  .meter { }
+  .meter .mlabel {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .meter .mtrack {
+    height: 8px;
+    border-radius: 5px;
+    background: rgba(42,33,24,0.14);
+    overflow: hidden;
+  }
+  .meter .mfill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+  }
+
+  .outcome-flag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    padding: 4px 10px;
+    border-radius: 3px;
+    color: #fff;
+    margin-bottom: 14px;
+  }
+  .flag-multi { background: var(--teal); }
+  .flag-uni { background: var(--maroon); }
+
+  .glossary-list dt {
+    font-family: 'Lora', serif;
+    font-weight: 700;
+    margin-top: 14px;
+    color: var(--text-dark);
+  }
+  .glossary-list dd {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-dark);
+    margin: 4px 0 0;
+  }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,15,25,0.72);
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--parchment);
+    max-width: 560px;
+    width: 100%;
+    max-height: 82vh;
+    overflow-y: auto;
+    border-radius: 4px;
+    padding: 26px 26px 22px;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 14px; right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-dim);
+  }
+
+  .rec-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.87rem;
+  }
+  .rec-table th, .rec-table td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(42,33,24,0.15);
+    vertical-align: top;
+  }
+  .rec-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .discuss-list {
+    font-family: 'Lora', serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    padding-left: 20px;
+    color: var(--text-dark);
+  }
+  .discuss-list li { margin-bottom: 10px; }
+
+  .note-box {
+    background: rgba(226,35,26,0.12);
+    border: 1px solid rgba(226,35,26,0.4);
+    border-radius: 3px;
+    padding: 12px 14px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+  }
+
+  footer.note {
+    text-align: center;
+    color: rgba(233,226,207,0.4);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    margin-top: 26px;
+    letter-spacing: 0.03em;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">Coalition or Alone
+      <span>UNIT 2: TOOLS OF FOREIGN POLICY</span>
+    </div>
+    <button class="glossary-btn" onclick="document.getElementById('glossaryModal').classList.add('open')">Glossary</button>
+  </header>
+
+  <div id="app" class="dossier"><div class="dossier-inner" id="appInner"></div></div>
+
+  <footer class="note">ARDENNE FOREIGN MINISTRY — SIMULATION FILE — FOR EDUCATIONAL USE</footer>
+</div>
+
+<div class="modal-overlay" id="glossaryModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('glossaryModal').classList.remove('open')">&times;</button>
+    <h2 class="subhead">Key terms</h2>
+    <dl class="glossary-list">
+      <dt>Multilateralism</dt>
+      <dd>Coordinating action with multiple states, usually through an international body or coalition, so decisions carry broad legitimacy and the costs and risks are shared. It tends to take longer, since it requires building consensus.</dd>
+      <dt>Unilateralism</dt>
+      <dd>A state acting on its own judgment, using its own resources, without waiting for international authorization or a broad coalition. It can be faster and unconstrained, but it carries the full cost and risk alone and can damage relationships with other states.</dd>
+      <dt>Mutual defense clause</dt>
+      <dd>A treaty provision where members agree that an attack on one is treated as an attack on all. Invoking it is a way of turning a bilateral attack into a multilateral response.</dd>
+      <dt>Coalition of the willing</dt>
+      <dd>An ad hoc group of states that join a military or political effort without a formal mandate from a body like the UN Security Council. It sits between full multilateralism and true unilateralism.</dd>
+      <dt>Security Council authorization</dt>
+      <dd>Formal approval from the UN Security Council for the use of force. It is the clearest source of international legal legitimacy for military action, but any of the five permanent members can block it with a veto.</dd>
+      <dt>Legitimacy</dt>
+      <dd>Whether other states and institutions view an action as rightful and lawful, rather than merely powerful. Legitimacy affects how much cooperation a state can expect afterward.</dd>
+      <dt>Burden-sharing</dt>
+      <dd>Spreading the financial, military, and political costs of an intervention across multiple partners, rather than one state bearing them alone.</dd>
+    </dl>
+  </div>
+</div>
+
+<script>
+const progress = { part1Done: false, part2Done: false };
+
+const s1 = { legitimacy: 50, alliance: 50, overreach: 50, stability: 50, choice: null };
+const s2 = { legitimacy: 50, alliance: 50, overreach: 50, stability: 50, choice: null };
+
+function clamp(v){ return Math.max(0, Math.min(100, v)); }
+
+function applyDeltas(target, d){
+  target.legitimacy = clamp(target.legitimacy + (d.legitimacy||0));
+  target.alliance    = clamp(target.alliance + (d.alliance||0));
+  target.overreach   = clamp(target.overreach + (d.overreach||0));
+  target.stability   = clamp(target.stability + (d.stability||0));
+}
+
+function meterBar(label, value, invert){
+  let good = invert ? (value <= 45) : (value >= 55);
+  let mid = value > 45 && value < 55;
+  let color = mid ? '#b8964f' : (good ? '#2f6e6a' : '#8c3a2b');
+  return `
+    <div class="meter">
+      <div class="mlabel"><span>${label}</span><span>${value}/100</span></div>
+      <div class="mtrack"><div class="mfill" style="width:${value}%; background:${color};"></div></div>
+    </div>`;
+}
+
+function metersBlock(t){
+  return `<div class="meters">
+    ${meterBar('LEGITIMACY', t.legitimacy, false)}
+    ${meterBar('ALLIANCE TRUST', t.alliance, false)}
+    ${meterBar('COST &amp; OVERREACH', t.overreach, true)}
+    ${meterBar('REGIONAL STABILITY', t.stability, false)}
+  </div>`;
+}
+
+function render(html){
+  document.getElementById('appInner').innerHTML = html;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+/* ---------------- HUB ---------------- */
+function renderHub(){
+  render(`
+    <p class="tag-line">FILE 000 — SIMULATION MENU</p>
+    <h1 class="headline">You serve as head of government of Ardenne, in two separate moments of crisis.</h1>
+    <p class="body-text last">Each scenario is a self-contained decision, playable in either order.</p>
+    <div class="hub-grid">
+      <button class="hub-card" onclick="renderPart1Intro()">
+        ${progress.part1Done ? '<span class="done-badge">COMPLETED</span>' : ''}
+        <span class="part-label">PART I — FILE 014</span>
+        <span class="part-title">A Morning of Coordinated Attacks</span>
+        <span class="part-desc">Ardenne's capital is struck by a devastating, coordinated attack traced to a militant network sheltered by a neighboring state.</span>
+      </button>
+      <button class="hub-card uni" onclick="renderPart2Intro()">
+        ${progress.part2Done ? '<span class="done-badge">COMPLETED</span>' : ''}
+        <span class="part-label">PART II — FILE 027</span>
+        <span class="part-title">The Case for War</span>
+        <span class="part-desc">Years later, contested intelligence suggests a separate, unrelated state is secretly building banned weapons.</span>
+      </button>
+    </div>
+    ${(progress.part1Done && progress.part2Done) ? '<button class="continue-btn" onclick="renderFinalDebrief()">Compare both crises →</button>' : ''}
+  `);
+}
+
+/* ================= PART I — 9/11 & Afghanistan (multilateralism) ================= */
+function renderPart1Intro(){
+  render(`
+    <p class="tag-line">PART I · FILE 014 — CRISIS BRIEFING</p>
+    <h1 class="headline">On a single morning, coordinated attacks strike Ardenne's capital.</h1>
+    <p class="body-text">A coordinated series of bombings hits government and financial districts within the same hour. Thousands are killed. It is, by far, the deadliest attack ever carried out on Ardenne's soil.</p>
+    <p class="body-text">Within days, intelligence agencies — corroborated by several allied services — trace the plot to a stateless militant network training in remote camps inside Kharesh, a country whose ruling faction has sheltered the network's leadership for years and refuses every demand to hand them over.</p>
+    <p class="body-text">Ardenne belongs to the Global Concord, a mutual-defense pact whose members have pledged that an attack on one is an attack on all — a clause that has never once been invoked in the pact's history. Messages of solidarity and offers of help are already arriving from capitals around the world.</p>
+    <div class="meta-row">
+      <span>CASUALTIES: MASS</span>
+      <span>WORLD REACTION: SOLIDARITY</span>
+      <span>MUTUAL DEFENSE CLAUSE: UNTESTED</span>
+    </div>
+    <div class="choice-grid">
+      <button class="choice-card multilateral" onclick="choosePart1('multi')">
+        <span class="stamp">OPTION A — INVOKE THE CLAUSE</span>
+        <span class="ctitle">Call on the Concord</span>
+        <span class="cdesc">Formally invoke the mutual-defense clause, take your evidence to the Global Concord and the UN-style Security Council, and assemble a broad coalition — with troop and airspace commitments from dozens of states — before acting against Kharesh.</span>
+      </button>
+      <button class="choice-card unilateral" onclick="choosePart1('uni')">
+        <span class="stamp">OPTION B — ACT ALONE</span>
+        <span class="ctitle">Strike without waiting</span>
+        <span class="cdesc">Skip the diplomacy. Grief and fury at home demand immediate action. Launch a unilateral campaign against Kharesh using only Ardenne's own forces, and worry about world opinion afterward.</span>
+      </button>
+    </div>
+  `);
+}
+
+function choosePart1(choice){
+  if(choice !== 'multi'){
+    render(`
+      <p class="tag-line">PART I · FILE 014 — RECONSIDER</p>
+      <h1 class="headline">Your cabinet urges you to reconsider.</h1>
+      <p class="body-text">Advisors remind you: the Global Concord's mutual-defense clause exists for exactly this moment, and dozens of allies are already offering support. Acting alone here, with a coalition this ready and willing, is a choice this briefing wants you to weigh more carefully before committing.</p>
+      <p class="body-text last">Return to the briefing and decide again.</p>
+      <button class="continue-btn" onclick="renderPart1Intro()">Reconsider the decision →</button>
+    `);
+    return;
+  }
+  s1.choice = choice;
+  applyDeltas(s1, {legitimacy: +25, alliance: +22, overreach: -10, stability: +15});
+  const html = `
+      <span class="outcome-flag flag-multi">MULTILATERAL PATH</span>
+      <h2 class="subhead">For the first time in its history, the Concord invokes the clause.</h2>
+      <p class="body-text">Within a month, the Security Council condemns the attacks and recognizes Ardenne's right to respond. Dozens of Concord members offer troops, intelligence, basing rights, or funding. When the campaign against Kharesh's government begins, it is a coalition operation from day one — and when the fighting phase ends, coalition partners share responsibility for stabilizing the country and training a new government.</p>
+      <p class="body-text last">It is not without friction: coordinating dozens of militaries slows every decision, and some partners limit what their troops are allowed to do. But almost no state disputes the legitimacy of the response, and Ardenne enters the next decade with deeper, not weaker, alliances.</p>
+    `;
+  render(`
+    <p class="tag-line">PART I · FILE 014 — OUTCOME</p>
+    ${html}
+    ${metersBlock(s1)}
+    <button class="continue-btn" onclick="renderPart1Debrief()">See what this illustrates →</button>
+  `);
+}
+
+function renderPart1Debrief(){
+  progress.part1Done = true;
+  render(`
+    <p class="tag-line">PART I — DEBRIEF</p>
+    <h1 class="headline">What this scenario is built to show</h1>
+    <p class="body-text last">Multilateralism: coordinating action with multiple states, usually through an international body or coalition, so a decision carries broad legitimacy and its costs and risks are shared. It tends to move slower, since it requires building consensus first.</p>
+    <button class="continue-btn" onclick="renderHub()">Return to the case file menu →</button>
+  `);
+}
+
+/* ================= PART II — Iraq 2003 (unilateralism) ================= */
+function renderPart2Intro(){
+  render(`
+    <p class="tag-line">PART II · FILE 027 — CRISIS BRIEFING</p>
+    <h1 class="headline">Two years later, a new dossier lands on your desk.</h1>
+    <p class="body-text">Your intelligence services assess — with confidence that some analysts privately dispute — that Belmar, a separate and unrelated state, has revived a banned weapons program in defiance of past international agreements. Belmar has no proven connection to the Kharesh network from the earlier crisis.</p>
+    <p class="body-text">Belmar's government denies the program and has allowed UN-style inspectors back into the country. The inspectors report broad cooperation and, so far, no confirmed evidence of an active program — but say they need more time to be certain either way.</p>
+    <p class="body-text">You push for a Security Council resolution explicitly authorizing force if Belmar doesn't fully comply. Two permanent members signal they will veto it; the resolution stalls. Millions demonstrate worldwide against military action without stronger proof. Domestically, hawks argue that waiting for certainty means waiting for a threat to fully mature.</p>
+    <div class="meta-row">
+      <span>EVIDENCE: CONTESTED</span>
+      <span>SECURITY COUNCIL: DEADLOCKED</span>
+      <span>INSPECTORS: REQUEST MORE TIME</span>
+    </div>
+    <div class="choice-grid">
+      <button class="choice-card multilateral" onclick="choosePart2('multi')">
+        <span class="stamp">OPTION A — HOLD FOR AUTHORIZATION</span>
+        <span class="ctitle">No resolution, no invasion</span>
+        <span class="cdesc">Accept the deadlock. Continue backing the inspections process and refuse to act militarily without explicit Security Council authorization — even if that means the question of Belmar's weapons program is never fully resolved.</span>
+      </button>
+      <button class="choice-card unilateral" onclick="choosePart2('uni')">
+        <span class="stamp">OPTION B — COALITION OF THE WILLING</span>
+        <span class="ctitle">Go without the resolution</span>
+        <span class="cdesc">The Council will not authorize this. Assemble a smaller "coalition of the willing" outside the formal UN process, on the strength of your own intelligence assessment, and invade Belmar before the suspected threat can mature.</span>
+      </button>
+    </div>
+  `);
+}
+
+function choosePart2(choice){
+  if(choice !== 'uni'){
+    render(`
+      <p class="tag-line">PART II · FILE 027 — RECONSIDER</p>
+      <h1 class="headline">Your cabinet pushes back on waiting.</h1>
+      <p class="body-text">The Security Council is deadlocked and shows no sign of moving. Hawks in your own government argue that holding for an authorization that will never come is itself a decision — one that lets a possible threat keep growing. This briefing wants you to weigh the coalition-of-the-willing option more seriously before committing.</p>
+      <p class="body-text last">Return to the briefing and decide again.</p>
+      <button class="continue-btn" onclick="renderPart2Intro()">Reconsider the decision →</button>
+    `);
+    return;
+  }
+  s2.choice = choice;
+  applyDeltas(s2, {legitimacy: -32, alliance: -22, overreach: +30, stability: -25});
+  const html = `
+      <span class="outcome-flag flag-uni">UNILATERAL PATH</span>
+      <h2 class="subhead">The coalition of the willing wins the war and loses the argument.</h2>
+      <p class="body-text">Belmar's government falls within weeks. Then postwar inspection teams comb the country for months and find no working weapons program at all. The intelligence used to justify the invasion is publicly discredited, and two of your coalition partners face intense domestic backlash for having joined you without a Council mandate.</p>
+      <p class="body-text last">Toppling Belmar's government leaves a power vacuum. Within two years an insurgency is fighting an open-ended occupation, and Ardenne — without a real coalition to share the load — is paying almost the entire cost in money, troops, and credibility it will need years to rebuild.</p>
+    `;
+  render(`
+    <p class="tag-line">PART II · FILE 027 — OUTCOME</p>
+    ${html}
+    ${metersBlock(s2)}
+    <button class="continue-btn" onclick="renderPart2Debrief()">See what this illustrates →</button>
+  `);
+}
+
+function renderPart2Debrief(){
+  progress.part2Done = true;
+  render(`
+    <p class="tag-line">PART II — DEBRIEF</p>
+    <h1 class="headline">What this scenario is built to show</h1>
+    <p class="body-text last">Unilateralism: a state acting on its own judgment, using its own resources, without waiting for international authorization or a broad coalition. It can be faster and unconstrained, but the state carries the full cost and risk alone, and it can damage relationships with other states.</p>
+    <button class="continue-btn" onclick="renderHub()">Return to the case file menu →</button>
+  `);
+}
+
+/* ---------------- FINAL COMBINED DEBRIEF ---------------- */
+function renderFinalDebrief(){
+  render(`
+    <p class="tag-line">FINAL ASSESSMENT — BOTH FILES CLOSED</p>
+    <h1 class="headline">Two crises, one country, two different logics of action.</h1>
+
+    <h2 class="subhead">Part I — Kharesh</h2>
+    ${metersBlock(s1)}
+    <div class="divider"></div>
+    <h2 class="subhead">Part II — Belmar</h2>
+    ${metersBlock(s2)}
+
+    <div class="divider"></div>
+
+    <h2 class="subhead">Multilateralism vs. unilateralism</h2>
+    <table class="rec-table">
+      <tr><th></th><th>Multilateralism</th><th>Unilateralism</th></tr>
+      <tr><td><strong>Speed</strong></td><td>Slower — needs consensus</td><td>Fast — one decision-maker</td></tr>
+      <tr><td><strong>Legitimacy</strong></td><td>Higher — shared endorsement</td><td>Lower — one state's judgment</td></tr>
+      <tr><td><strong>Cost</strong></td><td>Shared among partners</td><td>Borne mostly alone</td></tr>
+      <tr><td><strong>Flexibility</strong></td><td>Constrained by partners' interests</td><td>Unconstrained by outside input</td></tr>
+      <tr><td><strong>Risk if the intelligence is wrong</strong></td><td>Distributed and diluted</td><td>Concentrated on one state</td></tr>
+    </table>
+
+    <div class="divider"></div>
+    <h2 class="subhead">For class discussion</h2>
+    <ol class="discuss-list">
+      <li>Compare the two crises: what conditions made building a coalition realistic in Part I but nearly impossible in Part II?</li>
+      <li>In Part I, allies were offering to help before Ardenne even asked. In Part II, key allies were refusing to help no matter what. How much of the multilateral-vs-unilateral choice is really about a leader's values, versus simply which option is available?</li>
+      <li>The unilateral path in Part II cost far more, on every meter, than the unilateral path in Part I. What was different about the two situations that might explain that gap?</li>
+      <li>Is a mutual-defense clause like the one in Part I a form of multilateralism agreed to in advance? How is invoking a standing treaty different from building a coalition from scratch under pressure, as in Part II?</li>
+      <li>Contested intelligence turned out to be wrong in Part II. Should the possibility of being wrong change how high the bar should be for acting without international authorization?</li>
+    </ol>
+
+    <button class="restart-btn" onclick="restartAll()">Reset the entire simulation</button>
+  `);
+}
+
+function restartAll(){
+  progress.part1Done = false;
+  progress.part2Done = false;
+  s1.legitimacy = 50; s1.alliance = 50; s1.overreach = 50; s1.stability = 50; s1.choice = null;
+  s2.legitimacy = 50; s2.alliance = 50; s2.overreach = 50; s2.stability = 50; s2.choice = null;
+  renderHub();
+}
+
+renderHub();
+</script>
+
+</body>
+</html>
