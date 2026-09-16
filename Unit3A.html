@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Long Fuse: U.S.-Iran Relations, 1979-2026</title>
+<style>
+  :root {
+    --red: #b9c6d4;
+    --silver: #c7d0db;
+    --black: #0f1f38;
+    --dark-grey: #92a1b2;
+    --mid-grey: #33465f;
+    --light-grey: #16294a;
+    --white: #ffffff;
+    --serif: Georgia, 'Times New Roman', Times, serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    color: var(--silver);
+    background: var(--black);
+    line-height: 1.55;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  header.masthead {
+    border-bottom: 3px solid var(--mid-grey);
+    padding: 28px 24px 20px;
+    margin-bottom: 32px;
+  }
+
+  .masthead-inner {
+    max-width: 880px;
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    font-size: 13px;
+    color: var(--red);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(30px, 5vw, 44px);
+    margin: 8px 0 10px;
+    line-height: 1.1;
+    color: var(--white);
+  }
+
+  .dek {
+    font-size: 17px;
+    color: var(--dark-grey);
+    max-width: 620px;
+    margin: 0;
+  }
+
+  .howto {
+    background: var(--light-grey);
+    border-left: 4px solid var(--red);
+    padding: 14px 18px;
+    font-size: 15px;
+    color: var(--dark-grey);
+    margin-bottom: 36px;
+  }
+
+  /* Timeline */
+  nav.timeline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--mid-grey);
+    padding-bottom: 20px;
+  }
+
+  .marker {
+    flex: 1 1 84px;
+    min-width: 84px;
+    background: var(--light-grey);
+    border: 1.5px solid var(--mid-grey);
+    border-radius: 3px;
+    padding: 10px 8px 8px;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--sans);
+    position: relative;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .marker:hover { border-color: var(--red); }
+
+  .marker .num {
+    font-family: var(--serif);
+    font-size: 13px;
+    color: var(--dark-grey);
+    display: block;
+  }
+
+  .marker .yrs {
+    font-size: 12px;
+    font-weight: 700;
+    display: block;
+    margin-top: 2px;
+    color: var(--white);
+  }
+
+  .marker.active {
+    border-color: var(--red);
+    background: var(--red);
+  }
+  .marker.active .num,
+  .marker.active .yrs { color: var(--black); }
+
+  .marker .dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    display: none;
+  }
+  .marker.visited .dot { display: block; }
+  .marker.active .dot { background: var(--black); }
+
+  /* Era panel */
+  .era-panel {
+    margin-top: 32px;
+  }
+
+  .era-range {
+    font-size: 13px;
+    color: var(--red);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .era-title {
+    font-family: var(--serif);
+    font-size: 28px;
+    margin: 4px 0 14px;
+    color: var(--white);
+  }
+
+  .era-intro {
+    font-size: 16px;
+    color: var(--silver);
+    max-width: 640px;
+    margin-bottom: 26px;
+  }
+
+  .cloud-label {
+    font-size: 13px;
+    color: var(--dark-grey);
+    margin-bottom: 10px;
+  }
+
+  .cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .term {
+    border: 1.5px solid var(--mid-grey);
+    border-radius: 999px;
+    background: var(--light-grey);
+    color: var(--white);
+    cursor: pointer;
+    font-family: var(--sans);
+    font-weight: 600;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .term.size-s { padding: 6px 14px; font-size: 13px; }
+  .term.size-m { padding: 9px 18px; font-size: 15px; }
+  .term.size-l { padding: 12px 22px; font-size: 18px; }
+
+  .term:hover { border-color: var(--red); }
+
+  .term.open {
+    background: var(--red);
+    color: var(--black);
+    border-color: var(--red);
+  }
+
+  .definition {
+    display: none;
+    background: var(--light-grey);
+    border-left: 4px solid var(--red);
+    padding: 16px 20px;
+    margin: -8px 0 24px;
+    font-size: 15px;
+  }
+
+  .definition.show { display: block; }
+
+  .definition strong {
+    display: block;
+    font-family: var(--serif);
+    font-size: 17px;
+    margin-bottom: 6px;
+    color: var(--white);
+  }
+
+  .reflect {
+    border: 1.5px dashed var(--mid-grey);
+    padding: 16px 20px;
+    font-size: 15px;
+    color: var(--dark-grey);
+    margin-top: 8px;
+  }
+
+  .reflect .label {
+    font-weight: 700;
+    color: var(--white);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+
+  /* Nav buttons */
+  .era-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 34px;
+    gap: 12px;
+  }
+
+  .navbtn {
+    background: var(--red);
+    color: var(--black);
+    border: none;
+    border-radius: 3px;
+    padding: 11px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+
+  .navbtn:hover { background: var(--white); }
+  .navbtn:disabled {
+    background: var(--mid-grey);
+    color: var(--dark-grey);
+    cursor: not-allowed;
+  }
+
+  /* Synthesis era */
+  .synthesis-q {
+    background: var(--light-grey);
+    border: 1.5px solid var(--mid-grey);
+    border-radius: 3px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    font-size: 15px;
+  }
+
+  .synthesis-q .qnum {
+    color: var(--red);
+    font-weight: 700;
+    font-family: var(--serif);
+    margin-right: 6px;
+  }
+
+  @media (max-width: 600px) {
+    .marker { flex: 1 1 46%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="eyebrow">International Relations &middot; Current Events</div>
+    <h1>The Long Fuse: U.S.-Iran Relations, 1979&ndash;2026</h1>
+    <p class="dek">From the hostage crisis to a shooting war in the Gulf &mdash; the events and terms that connect one to the other.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="howto">
+    Work through the timeline in order, left to right. Each stop opens a cluster of key terms &mdash; click any term to see what it means and why it mattered. The last stop ties everything together.
+  </div>
+
+  <nav class="timeline" id="timeline"></nav>
+
+  <div class="era-panel" id="eraPanel"></div>
+
+</div>
+
+<script>
+const eras = [
+  {
+    range: "1979\u20131999",
+    title: "The Break and Containment",
+    intro: "After the 1979 revolution and hostage crisis, the United States and Iran cut diplomatic ties completely \u2014 ties that have never been restored. When Iraq invaded Iran in 1980, Washington quietly backed the same government it had just cut off, seeing a weakened Iran as more useful than a strengthened one. Through the 1990s, the U.S. shifted to a strategy of containment: economic and diplomatic isolation in place of direct confrontation.",
+    terms: [
+      { term: "Iran-Iraq War", size: "l", def: "An eight-year war (1980\u20131988) started when Iraq invaded Iran, killing hundreds of thousands of soldiers on both sides. Despite having no formal alliance with Iraq, the U.S. quietly shared intelligence and support with Saddam Hussein's government \u2014 seeing a weakened Iran as the more useful outcome." },
+      { term: "IRGC", size: "m", def: "The Islamic Revolutionary Guard Corps, formed in 1979 to protect the new revolutionary government. Over the following decades it grew into a major military and economic force inside Iran, and the main architect of Iran's influence abroad." },
+      { term: "Sanctions", size: "l", def: "Starting in the 1980s and expanding through the 1990s, the U.S. built a growing set of economic penalties on Iran \u2014 restricting trade, investment, and banking access \u2014 aimed at limiting its ability to grow its economy or its military." },
+      { term: "State sponsor of terrorism", size: "m", def: "A formal U.S. designation, applied to Iran since 1984, citing its support for armed groups abroad. It triggers automatic sanctions and has shaped U.S. policy for four decades." }
+    ],
+    reflect: "The U.S. backed Iraq in a war against Iran, then spent the 1990s trying to isolate Iran economically instead of confronting it directly. What do these two approaches have in common as ways of weakening a rival without full-scale war?"
+  },
+  {
+    range: "2002\u20132009",
+    title: "\"Axis of Evil\" and the Nuclear Question",
+    intro: "After the September 11 attacks, President Bush grouped Iran with Iraq and North Korea as an \u201cAxis of Evil.\u201d That same year, exiled opposition groups revealed the existence of secret Iranian nuclear facilities. From this point on, Iran's nuclear program became the central question hanging over U.S.-Iran relations.",
+    terms: [
+      { term: "\"Axis of Evil\"", size: "l", def: "A phrase from President Bush's 2002 State of the Union address grouping Iran, Iraq, and North Korea as threats supporting terrorism and pursuing weapons of mass destruction." },
+      { term: "Nuclear enrichment", size: "l", def: "The process of increasing the concentration of a specific uranium isotope. Low-level enrichment can fuel power plants; high-level enrichment can fuel a weapon. How far Iran enriches uranium has been the core dispute ever since." },
+      { term: "IAEA", size: "m", def: "The International Atomic Energy Agency, the United Nations' nuclear watchdog. It inspects nuclear facilities worldwide to verify countries are following their commitments \u2014 including Iran's." },
+      { term: "UN Security Council sanctions", size: "m", def: "Starting in 2006, the UN Security Council itself \u2014 not just the U.S. \u2014 began passing sanctions on Iran over its refusal to halt uranium enrichment, making this an international dispute, not only an American one." }
+    ],
+    reflect: "Nuclear programs can be used for both energy and weapons. Why does that dual-use nature make verification and trust so difficult between rival countries?"
+  },
+  {
+    range: "2010\u20132015",
+    title: "The Deal",
+    intro: "By the early 2010s, sanctions on Iran had become severe enough to badly damage its economy. That pressure, combined with years of secret diplomacy, eventually produced the most significant U.S.-Iran agreement since the revolution.",
+    terms: [
+      { term: "Crippling sanctions", size: "l", def: "Coordinated U.S. and European sanctions that cut off much of Iran's oil exports and access to the global banking system (SWIFT), sharply shrinking Iran's economy through the early 2010s." },
+      { term: "P5+1", size: "m", def: "The five permanent UN Security Council members \u2014 the U.S., U.K., France, Russia, and China \u2014 plus Germany, who together negotiated the nuclear deal with Iran." },
+      { term: "JCPOA (2015)", size: "l", def: "The Joint Comprehensive Plan of Action, commonly called the Iran nuclear deal. Iran agreed to strict caps on uranium enrichment and international inspections, in exchange for relief from sanctions." },
+      { term: "Snapback provision", size: "s", def: "A built-in mechanism allowing sanctions to automatically return if Iran was found violating the terms of the deal, without requiring a brand-new vote." }
+    ],
+    reflect: "The JCPOA traded sanctions relief for limits on Iran's nuclear program, rather than eliminating the program entirely. Why might negotiators have settled for limits instead of a full stop?"
+  },
+  {
+    range: "2018\u20132019",
+    title: "Maximum Pressure",
+    intro: "The deal did not last. In 2018, the Trump administration withdrew the U.S. from the JCPOA, arguing it didn't go far enough, and began reimposing sanctions with the explicit goal of forcing Iran back to the table on tougher terms.",
+    terms: [
+      { term: "U.S. withdrawal from the JCPOA", size: "l", def: "In May 2018, the Trump administration pulled the United States out of the nuclear deal, even though international inspectors said Iran was complying with it." },
+      { term: "\"Maximum pressure\" campaign", size: "l", def: "The strategy that followed withdrawal: reimposing and expanding sanctions on Iran's oil exports, banking, and shipping, aiming to collapse its economy until it agreed to a new, stricter deal." },
+      { term: "Tanker attacks (2019)", size: "m", def: "A series of explosions damaged oil tankers in the Gulf of Oman. The U.S. blamed Iran, sharply raising tensions around the region's most important shipping route." },
+      { term: "Strait of Hormuz", size: "m", def: "A narrow waterway between Iran and the Arabian Peninsula through which roughly a fifth of the world's oil passes. Because it is so easy to threaten and so hard to reroute around, it has repeatedly become a flashpoint." }
+    ],
+    reflect: "\"Maximum pressure\" assumed enough economic pain would force Iran to negotiate on U.S. terms. What might a country do instead if pressure makes negotiation look like weakness?"
+  },
+  {
+    range: "January 2020",
+    title: "Soleimani",
+    intro: "The maximum pressure years brought the two countries closer to direct military conflict than at any point since the 1980s. In January 2020, a single U.S. strike pushed that conflict into the open.",
+    terms: [
+      { term: "Qassem Soleimani", size: "l", def: "The commander of the IRGC's Quds Force, the branch responsible for Iran's operations abroad. For two decades he was the chief architect of Iran's network of allied armed groups across the Middle East." },
+      { term: "Targeted killing (Jan. 3, 2020)", size: "l", def: "A U.S. drone strike killed Soleimani near Baghdad's airport \u2014 the most direct U.S. action against a senior Iranian official in the countries' history." },
+      { term: "Ballistic missile retaliation", size: "m", def: "Days later, Iran fired ballistic missiles directly at a U.S. base in Iraq (Ain al-Asad), causing injuries but no reported deaths \u2014 seen as a calibrated response meant to avoid a wider war." },
+      { term: "Axis of Resistance", size: "l", def: "The network of Iran-aligned armed groups \u2014 including Hezbollah in Lebanon, the Houthis in Yemen, and militias in Iraq \u2014 built up over decades, largely under Soleimani's direction, to extend Iran's influence without direct Iranian troops." }
+    ],
+    reflect: "Both sides took action but stopped short of full-scale war in 2020. What does that restraint suggest about how each side was calculating risk at the time?"
+  },
+  {
+    range: "2023\u20132025",
+    title: "Direct Confrontation Begins",
+    intro: "For decades, Iran had fought Israel and the U.S. almost entirely through allied groups rather than its own military. That changed in 2024, when Iran struck Israel directly for the first time \u2014 and by the summer of 2025, the U.S. itself struck Iranian territory directly for the first time in decades.",
+    terms: [
+      { term: "Regional spillover", size: "m", def: "After fighting broke out between Israel and Hamas in October 2023, other Iran-aligned groups \u2014 Hezbollah, the Houthis, Iraqi militias \u2014 began launching their own attacks, widening the conflict across the region." },
+      { term: "April 2024 strikes", size: "l", def: "Iran launched missiles and drones directly at Israel for the first time in its history \u2014 a major shift away from relying solely on allied groups to do its fighting." },
+      { term: "October 2024 strikes", size: "m", def: "A second, larger wave of Iranian missiles struck Israel months later, followed by Israeli retaliatory strikes on targets inside Iran." },
+      { term: "June 2025 U.S. strikes on Iran", size: "l", def: "After Israel launched a 12-day air campaign against Iran starting June 13, 2025, the United States carried out its own strikes on three Iranian nuclear sites \u2014 Fordow, Natanz, and Isfahan \u2014 on June 21\u201322, 2025, in an operation called Midnight Hammer. Iran retaliated with a missile strike on a U.S. base in Qatar before a ceasefire took hold days later." }
+    ],
+    reflect: "A ceasefire held within days of the June 2025 strikes, and U.S. officials said Iran's nuclear program had only been set back, not ended. Looking ahead to what happened in February 2026, what does that suggest about whether military strikes alone can settle a standoff like this one?"
+  },
+  {
+    range: "February 2026",
+    title: "The War Begins",
+    intro: "The June 2025 ceasefire did not last. Eight months later, the United States and Israel launched a far larger coordinated attack on Iran \u2014 the opening move of a war that is still ongoing.",
+    terms: [
+      { term: "Coordinated U.S.-Israeli strikes (Feb. 28, 2026)", size: "l", def: "The United States and Israel launched joint strikes on Iran's nuclear and military infrastructure, marking the start of what is now called the 2026 Iran war." },
+      { term: "Decapitation strike", size: "l", def: "A military strategy aimed directly at a regime's top leadership rather than its broader military. The opening strikes killed Iran's Supreme Leader, Ali Khamenei, along with much of the senior leadership." },
+      { term: "Succession", size: "m", def: "Rather than collapsing, Iran's government quickly consolidated under a new set of hardliners led by Mojtaba Khamenei, Ali Khamenei's son." },
+      { term: "Retaliatory barrage", size: "m", def: "In the days after the opening strikes, Iran launched hundreds of missiles and thousands of drones at targets across the region in response." }
+    ],
+    reflect: "A decapitation strike aims to end a conflict quickly by removing its leadership. Based on what happened afterward, did that strategy achieve its goal here? Why or why not?"
+  },
+  {
+    range: "March\u2013Sept. 2026",
+    title: "The War Today",
+    intro: "More than six months in, the war has not stayed contained to Israel and Iran. It has pulled in Gulf states, disrupted global oil shipping, and settled into a pattern of fighting, ceasefires, and renewed fighting.",
+    terms: [
+      { term: "Strait of Hormuz crisis", size: "l", def: "Iran has tried to assert control over the strait, demanding ships follow routes and protocols it sets and pay fees to pass \u2014 provoking further U.S. strikes on Iranian assets in the area." },
+      { term: "Regional entanglement", size: "m", def: "Gulf states including the UAE, Bahrain, Kuwait, and Saudi Arabia have been hit by retaliatory strikes and missile debris, despite not being direct combatants in the war." },
+      { term: "Proxy activation", size: "m", def: "Hezbollah, the Houthis, and Iraqi militias have re-engaged in fighting alongside Iran, widening the war well beyond a two-country conflict." },
+      { term: "Oil price shock", size: "m", def: "Disrupted shipping and fears over the Strait of Hormuz have pushed energy prices sharply higher worldwide, including U.S. diesel prices passing $6 a gallon." },
+      { term: "Fragile ceasefires", size: "l", def: "Multiple truces and agreements \u2014 including a ceasefire in April 2026 and a memorandum of understanding in June 2026 \u2014 have been announced and then broken as fighting resumed." }
+    ],
+    reflect: "This war has drawn in countries that never chose to be part of it. Who bears the cost of a conflict like this, and who actually controls how and when it ends?"
+  }
+];
+
+const synthesisTerms = [
+  { term: "Security dilemma", size: "l", def: "When one country's defensive buildup \u2014 weapons, alliances, deterrence \u2014 makes a rival feel less safe, prompting its own buildup in response. Each side's attempt to become more secure ends up making both less secure." },
+  { term: "Balance of power", size: "m", def: "The idea that stability comes from no single state or alliance becoming too dominant. Much of the U.S., Israeli, and Gulf state activity in this conflict can be read as an attempt to prevent Iran from becoming the region's dominant power." },
+  { term: "Deterrence vs. escalation", size: "l", def: "Deterrence aims to prevent an attack by threatening a costly response. Escalation is what happens when both sides keep responding to each other's deterrent moves, and the conflict grows instead of stopping." },
+  { term: "National interest vs. international law", size: "m", def: "Countries often justify military action by pointing to their own security needs, even when that action is disputed under international law. This tension appears throughout the timeline you just worked through." },
+  { term: "Sovereignty", size: "s", def: "A state's right to control what happens within its own borders and to govern itself without outside interference \u2014 a right that strikes, sanctions, and proxy warfare all test in different ways." }
+];
+
+let current = 0;
+const visited = new Set();
+
+function renderTimeline() {
+  const nav = document.getElementById('timeline');
+  nav.innerHTML = '';
+  const all = eras.concat([{ range: "Synthesis", title: "Bringing It Together" }]);
+  all.forEach((e, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'marker' + (i === current ? ' active' : '') + (visited.has(i) ? ' visited' : '');
+    btn.innerHTML = '<span class="num">' + (i + 1) + '</span><span class="yrs">' + e.range + '</span><span class="dot"></span>';
+    btn.onclick = () => { current = i; render(); };
+    nav.appendChild(btn);
+  });
+}
+
+function renderEra() {
+  const panel = document.getElementById('eraPanel');
+  visited.add(current);
+
+  if (current < eras.length) {
+    const e = eras[current];
+    let cloudHtml = e.terms.map((t, ti) =>
+      '<button class="term size-' + t.size + '" data-idx="' + ti + '">' + t.term + '</button>'
+    ).join('');
+    let defsHtml = e.terms.map((t, ti) =>
+      '<div class="definition" id="def-' + ti + '"><strong>' + t.term + '</strong>' + t.def + '</div>'
+    ).join('');
+
+    panel.innerHTML =
+      '<div class="era-range">' + e.range + '</div>' +
+      '<h2 class="era-title">' + e.title + '</h2>' +
+      '<p class="era-intro">' + e.intro + '</p>' +
+      '<div class="cloud-label">Click a term to learn what it means:</div>' +
+      '<div class="cloud">' + cloudHtml + '</div>' +
+      '<div id="defs">' + defsHtml + '</div>' +
+      '<div class="reflect"><span class="label">Section Summary</span>' + e.reflect + '</div>' +
+      navButtons();
+
+    panel.querySelectorAll('.term').forEach(btn => {
+      btn.onclick = () => {
+        const idx = btn.dataset.idx;
+        const def = document.getElementById('def-' + idx);
+        const isOpen = def.classList.contains('show');
+        panel.querySelectorAll('.definition').forEach(d => d.classList.remove('show'));
+        panel.querySelectorAll('.term').forEach(t => t.classList.remove('open'));
+        if (!isOpen) {
+          def.classList.add('show');
+          btn.classList.add('open');
+        }
+      };
+    });
+  } else {
+    let cloudHtml = synthesisTerms.map((t, ti) =>
+      '<button class="term size-' + t.size + '" data-idx="' + ti + '">' + t.term + '</button>'
+    ).join('');
+    let defsHtml = synthesisTerms.map((t, ti) =>
+      '<div class="definition" id="sdef-' + ti + '"><strong>' + t.term + '</strong>' + t.def + '</div>'
+    ).join('');
+
+    panel.innerHTML =
+      '<div class="era-range">Synthesis</div>' +
+      '<h2 class="era-title">Bringing It Together</h2>' +
+      '<p class="era-intro">You just traced 47 years of U.S.-Iran relations. The last cluster of terms comes from international relations theory \u2014 the vocabulary analysts use to explain <em>why</em> conflicts like this one unfold the way they do.</p>' +
+      '<div class="cloud-label">Click a term to learn what it means:</div>' +
+      '<div class="cloud">' + cloudHtml + '</div>' +
+      '<div id="sdefs">' + defsHtml + '</div>' +
+      '<div class="synthesis-q"><span class="qnum">1</span>Choose three events from the timeline that are examples of U.S. hard power against Iran.</div>' +
+      '<div class="synthesis-q"><span class="qnum">2</span>Which theory of international relations has the United States used most in its relations with Iran?</div>' +
+      '<div class="synthesis-q"><span class="qnum">3</span>How has the use of proxy war in the region escalated the conflict since it started earlier this year?</div>' +
+      navButtons();
+
+    panel.querySelectorAll('.term').forEach(btn => {
+      btn.onclick = () => {
+        const idx = btn.dataset.idx;
+        const def = document.getElementById('sdef-' + idx);
+        const isOpen = def.classList.contains('show');
+        panel.querySelectorAll('.definition').forEach(d => d.classList.remove('show'));
+        panel.querySelectorAll('.term').forEach(t => t.classList.remove('open'));
+        if (!isOpen) {
+          def.classList.add('show');
+          btn.classList.add('open');
+        }
+      };
+    });
+  }
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  if (prevBtn) { prevBtn.disabled = current === 0; prevBtn.onclick = () => { current--; render(); }; }
+  if (nextBtn) {
+    nextBtn.disabled = current === eras.length;
+    nextBtn.onclick = () => { current++; render(); };
+  }
+}
+
+function navButtons() {
+  return '<div class="era-nav">' +
+    '<button class="navbtn" id="prevBtn">Previous</button>' +
+    '<button class="navbtn" id="nextBtn">Next</button>' +
+    '</div>';
+}
+
+function render() {
+  renderTimeline();
+  renderEra();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
+</script>
+
+</body>
+</html>
